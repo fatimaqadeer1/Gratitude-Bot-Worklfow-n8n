@@ -1,0 +1,504 @@
+{
+  "name": "gratitude intake, reminder, reflection",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "months",
+              "triggerAtHour": 19,
+              "triggerAtMinute": 50
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        32
+      ],
+      "id": "a563f903-ae3e-417a-8cd7-663df9b6abdb",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1hDnbYHW6ICzhJddnbBKTcTSdHEZNn-9X1bg4rf2w1gg",
+          "mode": "list",
+          "cachedResultName": "Gratitude Journal",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hDnbYHW6ICzhJddnbBKTcTSdHEZNn-9X1bg4rf2w1gg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hDnbYHW6ICzhJddnbBKTcTSdHEZNn-9X1bg4rf2w1gg/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Date",
+              "lookupValue": "2025-09-05"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        32
+      ],
+      "id": "eca7262c-e769-47f7-90e0-3598c32906c8",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6C7hEbUmPgwPIvvE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a warm journaling coach. Summarize today’s gratitude entries into a short 5–7 sentence reflection. Be positive and encouraging.\n",
+              "role": "system"
+            },
+            {
+              "content": "=Today's gratitude entries:\n{{$json[\"G1\"]}}\n{{$json[\"G2\"]}}\n{{$json[\"G3\"]}}\n\nAI journal entry: {{$json[\"AI_Entry\"]}}\nSentiment: {{$json[\"Sentiment_Label\"]}} ({{$json[\"Sentiment_Score\"]}})\n\n\n"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        624,
+        32
+      ],
+      "id": "b0b50942-9272-4acd-8356-01296fa5cd95",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "l8T11ccPgr28ufTL",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "fatima.qadeer.official@gmail.com",
+        "subject": "🌙 Your Daily Gratitude Reflection",
+        "message": "=Here’s your reflection for today:\n\n{{$json[\"message\"][\"content\"]}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        32
+      ],
+      "id": "5786fa72-7a08-42a4-9122-4d5c7105e21a",
+      "name": "Send a message",
+      "webhookId": "45a53bc2-e281-4099-89dd-16241330edc3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3h9pfAhUyLvC9x7L",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        208,
+        256
+      ],
+      "id": "461fb999-d704-41ae-8cac-546c4bdbadfe",
+      "name": "Schedule Trigger1"
+    },
+    {
+      "parameters": {
+        "sendTo": "fatima.qadeer.official@gmail.com",
+        "subject": "🌙 Daily Gratitude Reminder",
+        "message": "Hi, it's time for your daily reflection. 🌸\n\nClick here to fill in your 3 gratitude: \n\nhttp://localhost:5678/form-test/6a31f610-8d9a-413e-ab7c-45d266c7e361",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        256
+      ],
+      "id": "f201e0e3-e678-48f4-a7ef-05cf19ef2718",
+      "name": "Send a message1",
+      "webhookId": "f3c06920-abd5-4fa1-a5ca-54e663916fc1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "3h9pfAhUyLvC9x7L",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Daily Gratitude",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "g1",
+              "placeholder": "Gratitude #1",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "g2",
+              "placeholder": "Gratitude #2",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "g3",
+              "placeholder": "Gratitude #3",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "mood",
+              "placeholder": "Mood (1–5)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        -176
+      ],
+      "id": "cfdfc57c-d9f5-4772-83d6-1d888a8aab75",
+      "name": "On form submission",
+      "webhookId": "6a31f610-8d9a-413e-ab7c-45d266c7e361"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7a0833a0-27f9-4c83-a66c-43cfa7bfdaf2",
+              "name": "combinedText",
+              "value": "=Today I’m grateful for:\n1) {{$json.g1}}\n2) {{$json.g2}}\n3) {{$json.g3}}\n",
+              "type": "string"
+            },
+            {
+              "id": "81435f6f-c840-4ab1-85f2-37403a067f48",
+              "name": "dateLocal",
+              "value": "={{ $now.setZone('Asia/Karachi').toFormat('yyyy-LL-dd') }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        -176
+      ],
+      "id": "01b128d8-b10e-4719-9810-11b55b6a0686",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// AI result is already an object at message.content\nconst ai = $json?.message?.content;\nif (!ai) throw new Error('Expected AI fields at message.content');\n\n// Get your form fields and date from earlier nodes\nconst form = $item(0).$node[\"On form submission\"].json; // g1,g2,g3\nconst dateLocal = $item(0).$node[\"Edit Fields\"].json.dateLocal;\n\n// Return ONE object (Run Once for Each Item mode)\nreturn {\n  dateLocal,\n  g1: form.g1,\n  g2: form.g2,\n  g3: form.g3,\n  entry: ai.entry,\n  sentiment_label: ai.sentiment_label,\n  sentiment_score: ai.sentiment_score\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        -176
+      ],
+      "id": "edb001e7-ddb2-498c-8b8b-390b49229070",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1hDnbYHW6ICzhJddnbBKTcTSdHEZNn-9X1bg4rf2w1gg",
+          "mode": "list",
+          "cachedResultName": "Gratitude Journal",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hDnbYHW6ICzhJddnbBKTcTSdHEZNn-9X1bg4rf2w1gg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1hDnbYHW6ICzhJddnbBKTcTSdHEZNn-9X1bg4rf2w1gg/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{$json.dateLocal}}",
+            "G1": "={{$json.g1}}",
+            "G2": "={{$json.g2}}",
+            "G3": "={{$json.g3}}",
+            "AI_Entry": "={{$json.entry}}",
+            "Sentiment_Label": "={{$json.sentiment_label}}",
+            "Sentiment_Score": "={{$json.sentiment_score}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "G1",
+              "displayName": "G1",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "G2",
+              "displayName": "G2",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "G3",
+              "displayName": "G3",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI_Entry",
+              "displayName": "AI_Entry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sentiment_Label",
+              "displayName": "Sentiment_Label",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Sentiment_Score",
+              "displayName": "Sentiment_Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1104,
+        -176
+      ],
+      "id": "ff2d843a-cc1b-4395-86c3-06dca6e3d6a5",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6C7hEbUmPgwPIvvE",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a warm journaling coach.\nTurn the user’s 3 gratitude bullets into a short, kind, 3–5 sentence journal entry in first person.\nAlso analyze sentiment. \nOutput ONLY valid JSON with this structure:\n{\n  \"entry\": string,\n  \"sentiment_label\": \"positive\" | \"neutral\" | \"negative\",\n  \"sentiment_score\": number\n}",
+              "role": "system"
+            },
+            {
+              "content": "=Date: {{$json.dateLocal}}\nGratitudes:\n{{$json.combinedText}}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        608,
+        -176
+      ],
+      "id": "dc37b6a1-b024-44c0-8717-1d9024352031",
+      "name": "Message a model1",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "credentials": {
+        "openAiApi": {
+          "id": "l8T11ccPgr28ufTL",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cb4c55f3-390b-4375-abe1-9e13bb648058",
+  "meta": {
+    "instanceId": "1bdcc3a199c7ef4f9763cd3e8bade7412ae017ed9eca025315c1f6cbb8da5e5a"
+  },
+  "id": "RzxCTLwfMMmF05mI",
+  "tags": []
+}
